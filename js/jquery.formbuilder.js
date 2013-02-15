@@ -12,32 +12,51 @@
       save_url: false,
       load_url: false,
       control_box_target: false,
+      save_button_classes: false,
       serialize_prefix: 'frmb',
+      types: {
+        text: {
+          icon: false,
+          label: 'Text Field',
+          title: 'Text Field'
+        },
+        paragraph: {
+          icon: false,
+          label: 'Paragraph Field',
+          title: 'Paragraph Field'
+        },
+        checkbox: {
+          icon: false,
+          label: 'Checkboxes',
+          title: 'Checkbox Group'
+        },
+        radio: {
+          icon: false,
+          label: 'Radio',
+          title: 'Radio Group'
+        },
+        select: {
+          icon: false,
+          label: 'Select',
+          title: 'Select Box'
+        }
+      },
       messages: {
         save: "Save",
         add_new_field: "Add New Field...",
-        text: "Text Field",
         title: "Title",
-        paragraph: "Paragraph",
-        checkboxes: "Checkboxes",
-        radio: "Radio",
-        select: "Select List",
-        text_field: "Text Field",
         label: "Label",
-        paragraph_field: "Paragraph Field",
         select_options: "Select Options",
         add: "Add",
-        checkbox_group: "Checkbox Group",
         remove_message: "Are you sure you want to remove this element?",
         remove: "Remove",
-        radio_group: "Radio Group",
         selections_message: "Allow Multiple Selections",
         hide: "Hide",
         required: "Required",
         show: "Show"
       }
     };
-    var opts = $.extend(defaults, options);
+    var opts = $.extend(true, defaults, options);
     var frmb_id = 'frmb-' + $('ul[id^=frmb-]').length++;
     return this.each(function () {
       var ul_obj = $(this).append('<ul id="' + frmb_id + '" class="frmb"></ul>').find('ul');
@@ -55,29 +74,37 @@
         });
       }
       // Create form control select box and add into the editor
-      var controlBox = function (target) {
-        var select = '';
-        var box_content = '';
+      var controlBox = function (control_box_target, save_button_classes, types) {
+        var control_box = "<div class='frmb-controls'></div>"
+        var controls = '';
         var save_button = '';
-        var box_id = frmb_id + '-control-box';
         var save_id = frmb_id + '-save-button';
-        // Add the available options
-        select += '<option value="0">' + opts.messages.add_new_field + '</option>';
-        select += '<option value="input_text">' + opts.messages.text + '</option>';
-        select += '<option value="textarea">' + opts.messages.paragraph + '</option>';
-        select += '<option value="checkbox">' + opts.messages.checkboxes + '</option>';
-        select += '<option value="radio">' + opts.messages.radio + '</option>';
-        select += '<option value="select">' + opts.messages.select + '</option>';
-        // Build the control box and search button content
-        box_content = '<select id="' + box_id + '" class="frmb-control">' + select + '</select>';
-        save_button = '<input type="submit" id="' + save_id + '" class="frmb-submit" value="' + opts.messages.save + '"/>';
+        $.each(types, function(i, t) {
+          if (t.icon) {
+            controls += "<li>" +
+                          "<img src='" + t.icon + "' />" +
+                          "<div>" +
+                            t.label +
+                          "</div>" +
+                        "</li>"
+          } else {
+            controls += "<li>" +
+                          "<div>" +
+                            t.label +
+                          "</div>" +
+                        "</li>"
+          }
+        });
+        // Build the save button content
+        save_button = '<input type="submit" id="' + save_id + '" class="frmb-submit ' + save_button_classes + '" value="' + opts.messages.save + '"/>';
         // Insert the control box into page
-        if (!target) {
-          $(ul_obj).before(box_content);
+        frmbControls = $(control_box).append(controls);
+        if (!control_box_target) {
+          $(ul_obj).before(frmbControls);
         } else {
-          $(target).append(box_content);
+          $(control_box_target).append(frmbControls);
         }
-        // Insert the search button
+        // Insert the save button
         $(ul_obj).after(save_button);
         // Set the form save action
         $('#' + save_id).click(function () {
@@ -94,7 +121,7 @@
           }, 500);
           return false;
         });
-      }(opts.control_box_target);
+      }(opts.control_box_target, opts.save_button_classes, opts.types);
       // Json parser to build the form builder
       var fromJson = function (json) {
         var values = '';
@@ -160,14 +187,14 @@
         field += '<label>' + opts.messages.label + '</label>';
         field += '<input class="fld-title" id="title-' + last_id + '" type="text" value="' + values + '" />';
         help = '';
-        appendFieldLi(opts.messages.text, field, required, help);
+        appendFieldLi(opts.types.text.title, field, required, help);
       };
       // multi-line textarea
       var appendTextarea = function (values, required) {
         field += '<label>' + opts.messages.label + '</label>';
         field += '<input type="text" value="' + values + '" />';
         help = '';
-        appendFieldLi(opts.messages.paragraph_field, field, required, help);
+        appendFieldLi(opts.types.paragraph.title, field, required, help);
       };
       // adds a checkbox element
       var appendCheckboxGroup = function (values, options, required) {
@@ -191,7 +218,7 @@
         field += '</div>';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.messages.checkbox_group, field, required, help);
+        appendFieldLi(opts.types.checkbox.title, field, required, help);
       };
       // Checkbox field html, since there may be multiple
       var checkboxFieldHtml = function (values) {
@@ -231,7 +258,7 @@
         field += '</div>';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.messages.radio_group, field, required, help);
+        appendFieldLi(opts.types.radio.title, field, required, help);
       };
       // Radio field html, since there may be multiple
       var radioFieldHtml = function (values, name) {
@@ -276,7 +303,7 @@
         field += '</div>';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.messages.select, field, required, help);
+        appendFieldLi(opts.types.select.title, field, required, help);
       };
       // Select field html, since there may be multiple
       var selectFieldHtml = function (values, multiple) {
