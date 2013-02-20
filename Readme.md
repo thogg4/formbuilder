@@ -8,7 +8,8 @@ Changes:
 
 * There is no longer a checkbox group. Each checkbox element created is just one  checkbox.
 * Rearranged defaults object:
-```
+
+```javascript
 var defaults = {
       // must have jquery ui included to make sortable.
       sortable: false,
