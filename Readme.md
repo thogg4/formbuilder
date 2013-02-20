@@ -1,7 +1,7 @@
-jQuery.FormBuilder
+\jQuery.FormBuilder
 ==================
 
-This project has many changes to it, but it is heavily based on the forked project. (https://github.com/botskonet/jquery.formbuilder)
+This project has many changes to it, but it is heavily based on the jquery.formbuilder project. (https://github.com/botskonet/jquery.formbuilder)
 
 Changes:
 -------
@@ -79,3 +79,4 @@ $('any_element').formbuilder({options_to_override_defaults})
 ```
 
 I have also added a server side parser written in ruby to generate html from the json that is saved.
+
