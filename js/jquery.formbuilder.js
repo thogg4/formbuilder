@@ -9,7 +9,13 @@
   $.fn.formbuilder = function (options) {
     // Extend the configuration options with user-provided
     var defaults = {
-      save_url: false,
+      // must have jquery ui included to make sortable.
+      sortable: false,
+      save: {
+        url: false,
+        complete_function: function(xhr, status) {},
+        data_type: 'json'
+      },
       load_url: false,
       control_box_target: false,
       save_button_classes: false,
@@ -18,27 +24,27 @@
         text: {
           icon: false,
           label: 'Text Field',
-          title: 'Text Field'
+          value: 'input_text'
         },
         paragraph: {
           icon: false,
           label: 'Paragraph Field',
-          title: 'Paragraph Field'
+          value: 'textarea'
         },
         checkbox: {
           icon: false,
-          label: 'Checkboxes',
-          title: 'Checkbox Group'
+          label: 'Checkbox',
+          value: 'checkbox'
         },
         radio: {
           icon: false,
-          label: 'Radio',
-          title: 'Radio Group'
+          label: 'Radio Group',
+          value: 'radio'
         },
         select: {
           icon: false,
-          label: 'Select',
-          title: 'Select Box'
+          label: 'Select Box',
+          value: 'select'
         }
       },
       messages: {
@@ -53,13 +59,17 @@
         selections_message: "Allow Multiple Selections",
         hide: "Hide",
         required: "Required",
-        show: "Show"
+        show: "Show",
+        checked: 'Checked'
       }
     };
     var opts = $.extend(true, defaults, options);
     var frmb_id = 'frmb-' + $('ul[id^=frmb-]').length++;
     return this.each(function () {
       var ul_obj = $(this).append('<ul id="' + frmb_id + '" class="frmb"></ul>').find('ul');
+      if ($.ui && opts.sortable) {
+        ul_obj.sortable();
+      }
       var field = '',
         field_type = '',
         last_id = 1,
@@ -69,10 +79,10 @@
       // load existing form data
       if (opts.load_url) {
         $.getJSON(opts.load_url, function (json) {
-          form_db_id = json.form_id;
-          fromJson(json.form_structure);
+          fromJson(json);
         });
       }
+
       // Create form control select box and add into the editor
       var controlBox = function (control_box_target, save_button_classes, types) {
         var control_box = "<div class='frmb-controls'></div>"
@@ -81,22 +91,21 @@
         var save_id = frmb_id + '-save-button';
         $.each(types, function(i, t) {
           if (t.icon) {
-            controls += "<li>" +
+            controls += "<li class='" + t.value + "'>" +
                           "<img src='" + t.icon + "' />" +
                           "<div>" +
                             t.label +
                           "</div>" +
                         "</li>"
           } else {
-            controls += "<li>" +
+            controls += "<li class='" + t.value + "'>" +
                           "<div>" +
                             t.label +
                           "</div>" +
                         "</li>"
           }
         });
-        // Build the save button content
-        save_button = '<input type="submit" id="' + save_id + '" class="frmb-submit ' + save_button_classes + '" value="' + opts.messages.save + '"/>';
+        
         // Insert the control box into page
         frmbControls = $(control_box).append(controls);
         if (!control_box_target) {
@@ -104,6 +113,9 @@
         } else {
           $(control_box_target).append(frmbControls);
         }
+
+        // Build the save button content
+        save_button = '<input type="submit" id="' + save_id + '" class="frmb-submit ' + save_button_classes + '" value="' + opts.messages.save + '"/>';
         // Insert the save button
         $(ul_obj).after(save_button);
         // Set the form save action
@@ -111,34 +123,24 @@
           save();
           return false;
         });
-        // Add a callback to the select element
-        $('#' + box_id).change(function () {
-          appendNewField($(this).val());
-          $(this).val(0).blur();
-          // This solves the scrollTo dependency
-          $('html, body').animate({
-            scrollTop: $('#frm-' + (last_id - 1) + '-item').offset().top
-          }, 500);
-          return false;
+
+        // Add a callback to each li element
+        $('.frmb-controls li').each(function() {
+          $(this).on('click', function() {
+            appendNewField($(this).attr('class'));
+          });
         });
+
       }(opts.control_box_target, opts.save_button_classes, opts.types);
-      // Json parser to build the form builder
+
+      // json parser to build the form builder
       var fromJson = function (json) {
         var values = '';
         var options = false;
         // Parse json
-        $(json).each(function () {
-          // checkbox type
-          if (this.cssClass === 'checkbox') {
-            options = [this.title];
-            values = [];
-            $.each(this.values, function () {
-              values.push([this.value, this.baseline]);
-            });
-          }
+        $.each(json, function () {
           // radio type
-          else if (this.cssClass === 'radio') {
-            options = [this.title];
+          if (this.cssClass === 'radio') {
             values = [];
             $.each(this.values, function () {
               values.push([this.value, this.baseline]);
@@ -146,7 +148,6 @@
           }
           // select type
           else if (this.cssClass === 'select') {
-            options = [this.title, this.multiple];
             values = [];
             $.each(this.values, function () {
               values.push([this.value, this.baseline]);
@@ -154,25 +155,38 @@
           } else {
             values = [this.values];
           }
+          options = {
+            title: this.title,
+            multiple: this.multiple,
+            baseline: this.baseline
+          }
           appendNewField(this.cssClass, values, options, this.required);
         });
       };
-      // Wrapper for adding a new field
+
+      // wrapper for adding a new field
       var appendNewField = function (type, values, options, required) {
         field = '';
         field_type = type;
         if (typeof (values) === 'undefined') {
           values = '';
         }
+        if (typeof(options) == 'undefined') {
+          options = {
+            title: '',
+            multiple: 'false',
+            baseline: 'false'
+          }
+        }
         switch (type) {
           case 'input_text':
-            appendTextInput(values, required);
+            appendTextInput(values, options, required);
             break;
           case 'textarea':
-            appendTextarea(values, required);
+            appendTextarea(values, options, required);
             break;
           case 'checkbox':
-            appendCheckboxGroup(values, options, required);
+            appendCheckbox(values, options, required);
             break;
           case 'radio':
             appendRadioGroup(values, options, required);
@@ -183,68 +197,38 @@
         }
       };
       // single line input type="text"
-      var appendTextInput = function (values, required) {
+      var appendTextInput = function (values, options, required) {
         field += '<label>' + opts.messages.label + '</label>';
-        field += '<input class="fld-title" id="title-' + last_id + '" type="text" value="' + values + '" />';
+        field += '<input class="fld-title" id="title-' + last_id + '" type="text" value="' + options.title + '" />';
         help = '';
-        appendFieldLi(opts.types.text.title, field, required, help);
+        appendFieldLi(opts.types.text.label, field, required, help);
       };
       // multi-line textarea
-      var appendTextarea = function (values, required) {
+      var appendTextarea = function (values, options, required) {
         field += '<label>' + opts.messages.label + '</label>';
-        field += '<input type="text" value="' + values + '" />';
+        field += '<input type="text" value="' + options.title + '" />';
         help = '';
-        appendFieldLi(opts.types.paragraph.title, field, required, help);
+        appendFieldLi(opts.types.paragraph.label, field, required, help);
       };
       // adds a checkbox element
-      var appendCheckboxGroup = function (values, options, required) {
-        var title = '';
-        if (typeof (options) === 'object') {
-          title = options[0];
-        }
+      var appendCheckbox = function (values, options, required) {
+        var checked = false;
+        checked = options.baseline == 'true'
         field += '<div class="chk_group">';
         field += '<div class="frm-fld"><label>' + opts.messages.title + '</label>';
-        field += '<input type="text" name="title" value="' + title + '" /></div>';
-        field += '<div class="false-label">' + opts.messages.select_options + '</div>';
-        field += '<div class="fields">';
-        if (typeof (values) === 'object') {
-          for (i = 0; i < values.length; i++) {
-            field += checkboxFieldHtml(values[i]);
-          }
-        } else {
-          field += checkboxFieldHtml('');
-        }
-        field += '<div class="add-area"><a href="#" class="add add_ck">' + opts.messages.add + '</a></div>';
-        field += '</div>';
+        field += '<input type="text" name="title" value="' + options.title + '" /></div>';
+        field += "<div class='frm-fld'>";
+        field += '<label>' + opts.messages.checked + '</label>';
+        field += '<input type="checkbox"' + (checked ? ' checked="checked"' : '') + ' />';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.types.checkbox.title, field, required, help);
-      };
-      // Checkbox field html, since there may be multiple
-      var checkboxFieldHtml = function (values) {
-        var checked = false;
-        var value = '';
-        if (typeof (values) === 'object') {
-          value = values[0];
-          checked = (values[1] === 'false' || values[1] === 'undefined') ? false : true;
-        }
-        field = '';
-        field += '<div>';
-        field += '<input type="checkbox"' + (checked ? ' checked="checked"' : '') + ' />';
-        field += '<input type="text" value="' + value + '" />';
-        field += '<a href="#" class="remove" title="' + opts.messages.remove_message + '">' + opts.messages.remove + '</a>';
-        field += '</div>';
-        return field;
+        appendFieldLi(opts.types.checkbox.label, field, required, help);
       };
       // adds a radio element
       var appendRadioGroup = function (values, options, required) {
-        var title = '';
-        if (typeof (options) === 'object') {
-          title = options[0];
-        }
         field += '<div class="rd_group">';
         field += '<div class="frm-fld"><label>' + opts.messages.title + '</label>';
-        field += '<input type="text" name="title" value="' + title + '" /></div>';
+        field += '<input type="text" name="title" value="' + options.title + '" /></div>';
         field += '<div class="false-label">' + opts.messages.select_options + '</div>';
         field += '<div class="fields">';
         if (typeof (values) === 'object') {
@@ -258,7 +242,7 @@
         field += '</div>';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.types.radio.title, field, required, help);
+        appendFieldLi(opts.types.radio.label, field, required, help);
       };
       // Radio field html, since there may be multiple
       var radioFieldHtml = function (values, name) {
@@ -276,17 +260,28 @@
         field += '</div>';
         return field;
       };
+      var multipleSelectHtml = function (values) {
+        var checked = false;
+        var value = '';
+        if (typeof (values) === 'object') {
+          value = values[0];
+          checked = (values[1] === 'false' || values[1] === 'undefined') ? false : true;
+        }
+        field = '';
+        field += '<div>';
+        field += '<input type="checkbox"' + (checked ? ' checked="checked"' : '') + ' />';
+        field += '<input type="text" value="' + value + '" />';
+        field += '<a href="#" class="remove" title="' + opts.messages.remove_message + '">' + opts.messages.remove + '</a>';
+        field += '</div>';
+        return field;
+      };
       // adds a select/option element
       var appendSelectList = function (values, options, required) {
         var multiple = false;
-        var title = '';
-        if (typeof (options) === 'object') {
-          title = options[0];
-          multiple = options[1] === 'true' || options[1] === 'checked' ? true : false;
-        }
+        multiple = options.multiple === 'true'
         field += '<div class="opt_group">';
         field += '<div class="frm-fld"><label>' + opts.messages.title + '</label>';
-        field += '<input type="text" name="title" value="' + title + '" /></div>';
+        field += '<input type="text" name="title" value="' + options.title + '" /></div>';
         field += '';
         field += '<div class="false-label">' + opts.messages.select_options + '</div>';
         field += '<div class="fields">';
@@ -303,21 +298,18 @@
         field += '</div>';
         field += '</div>';
         help = '';
-        appendFieldLi(opts.types.select.title, field, required, help);
+        appendFieldLi(opts.types.select.label, field, required, help);
       };
       // Select field html, since there may be multiple
       var selectFieldHtml = function (values, multiple) {
         if (multiple) {
-          return checkboxFieldHtml(values);
+          return multipleSelectHtml(values);
         } else {
           return radioFieldHtml(values);
         }
       };
       // Appends the new field markup to the editor
       var appendFieldLi = function (title, field_html, required, help) {
-        if (required) {
-          required = required === 'checked' ? true : false;
-        }
         var li = '';
         li += '<li id="frm-' + last_id + '-item" class="' + field_type + '">';
         li += '<div class="legend">';
@@ -327,7 +319,7 @@
         li += '<div id="frm-' + last_id + '-fld" class="frm-holder">';
         li += '<div class="frm-elements">';
         li += '<div class="frm-fld"><label for="required-' + last_id + '">' + opts.messages.required + '</label>';
-        li += '<input class="required" type="checkbox" value="1" name="required-' + last_id + '" id="required-' + last_id + '"' + (required ? ' checked="checked"' : '') + ' /></div>';
+        li += '<input class="required" type="checkbox" value="1" name="required-' + last_id + '" id="required-' + last_id + '"' + (required === 'true' ? ' checked="checked"' : ' hello="hello"') + ' /></div>';
         li += field;
         li += '</div>';
         li += '</div>';
@@ -386,11 +378,6 @@
         }
         return false;
       });
-      // Attach a callback to add new checkboxes
-      $('.frmb').delegate('.add_ck', 'click', function () {
-        $(this).parent().before(checkboxFieldHtml());
-        return false;
-      });
       // Attach a callback to add new options
       $('.frmb').delegate('.add_opt', 'click', function () {
         $(this).parent().before(selectFieldHtml('', false));
@@ -403,14 +390,16 @@
       });
       // saves the serialized data to the server
       var save = function () {
-        if (opts.save_url) {
+        if (opts.save.url) {
           $.ajax({
             type: "POST",
-            url: opts.save_url,
+            dataType: opts.save.data_type,
+            url: opts.save.url,
             data: $(ul_obj).serializeFormList({
               prepend: opts.serialize_prefix
-            }) + "&form_id=" + form_db_id,
-            success: function () {}
+            }),
+            success: function () {},
+            complete: opts.save.complete_function
           });
         }
       };
@@ -450,24 +439,18 @@
           serialStr += opts.prepend + '[' + li_count + '][' + key + ']=' + encodeURIComponent($(this).attr(opts.attributes[att]));
           // append the form field values
           if (opts.attributes[att] === 'class') {
-            serialStr += opts.prepend + '[' + li_count + '][required]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input.required').attr('checked'));
+            serialStr += opts.prepend + '[' + li_count + '][required]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input.required').is(':checked'));
             switch ($(this).attr(opts.attributes[att])) {
               case 'input_text':
-                serialStr += opts.prepend + '[' + li_count + '][values]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input[type=text]').val());
+                serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input[type=text]').val());
                 break;
               case 'textarea':
-                serialStr += opts.prepend + '[' + li_count + '][values]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input[type=text]').val());
+                serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($('#' + $(this).attr('id') + ' input[type=text]').val());
                 break;
               case 'checkbox':
-                c = 1;
                 $('#' + $(this).attr('id') + ' input[type=text]').each(function () {
-                  if ($(this).attr('name') === 'title') {
-                    serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($(this).val());
-                  } else {
-                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][value]=' + encodeURIComponent($(this).val());
-                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][baseline]=' + $(this).prev().attr('checked');
-                  }
-                  c++;
+                  serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($(this).val());
+                  serialStr += opts.prepend + '[' + li_count + '][baseline]=' + $(this).parent().siblings('.frm-fld').find('input[type=checkbox]').is(':checked');
                 });
                 break;
               case 'radio':
@@ -477,20 +460,20 @@
                     serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($(this).val());
                   } else {
                     serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][value]=' + encodeURIComponent($(this).val());
-                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][baseline]=' + $(this).prev().attr('checked');
+                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][baseline]=' + $(this).prev().is(':checked');
                   }
                   c++;
                 });
                 break;
               case 'select':
                 c = 1;
-                serialStr += opts.prepend + '[' + li_count + '][multiple]=' + $('#' + $(this).attr('id') + ' input[name=multiple]').attr('checked');
+                serialStr += opts.prepend + '[' + li_count + '][multiple]=' + $('#' + $(this).attr('id') + ' input[name=multiple]').is(':checked');
                 $('#' + $(this).attr('id') + ' input[type=text]').each(function () {
                   if ($(this).attr('name') === 'title') {
                     serialStr += opts.prepend + '[' + li_count + '][title]=' + encodeURIComponent($(this).val());
                   } else {
                     serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][value]=' + encodeURIComponent($(this).val());
-                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][baseline]=' + $(this).prev().attr('checked');
+                    serialStr += opts.prepend + '[' + li_count + '][values][' + c + '][baseline]=' + $(this).prev().is(':checked');
                   }
                   c++;
                 });
