@@ -22,27 +22,27 @@
       serialize_prefix: 'frmb',
       types: {
         text: {
-          icon: false,
+          icon: '&#xe005;',
           label: 'Text Field',
           value: 'input_text'
         },
         paragraph: {
-          icon: false,
+          icon: '&#xe001;',
           label: 'Paragraph Field',
           value: 'textarea'
         },
         checkbox: {
-          icon: false,
+          icon: '&#xe006;',
           label: 'Checkbox',
           value: 'checkbox'
         },
         radio: {
-          icon: false,
+          icon: '&#xe002;',
           label: 'Radio Group',
           value: 'radio'
         },
         select: {
-          icon: false,
+          icon: '&#xe003;',
           label: 'Select Box',
           value: 'select'
         }
@@ -92,7 +92,7 @@
         $.each(types, function(i, t) {
           if (t.icon) {
             controls += "<li class='" + t.value + "'>" +
-                          "<img src='" + t.icon + "' />" +
+                          "<span data-icon='" + t.icon + "'></span>" +
                           "<div>" +
                             t.label +
                           "</div>" +

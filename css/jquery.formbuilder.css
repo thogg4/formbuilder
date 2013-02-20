@@ -22,7 +22,7 @@
 .frmb-controls { margin: 20px 0px; }
 .frmb-controls li { list-style-type: none; display: inline-block; margin: 0px 10px; padding: 10px; cursor: pointer; text-align: center; }
 .frmb-controls li  div { margin-top: 5px; }
-.frmb-submit { }
+.frmb-controls li span { font-size: 25px; }
 ul.frmb { padding-left: 0px; list-style-type: none; margin-left: 0px; }
 .frmb li { margin-bottom: 5px; padding: 5px; border: 1px solid #CCCCCC; background-color: #FFFFFF;}
 .frmb .legend { cursor: move; }
