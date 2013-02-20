@@ -1,0 +1,53 @@
+/* change this to use your own font icons for the control box */
+@font-face {
+    font-family: 'formbuilder';
+    src:url('icons/formbuilder.eot');
+    src:url('icons/formbuilder.eot?#iefix') format('embedded-opentype'),
+        url('icons/formbuilder.woff') format('woff'),
+        url('icons/formbuilder.ttf') format('truetype'),
+        url('icons/formbuilder.svg#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+[data-icon]:before {
+    font-family: 'formbuilder';
+    content: attr(data-icon);
+    speak: none;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+.frmb-controls { margin: 20px 0px; }
+.frmb-controls li { list-style-type: none; display: inline-block; margin: 0px 10px; padding: 10px; cursor: pointer; text-align: center; }
+.frmb-controls li  div { margin-top: 5px; }
+.frmb-submit { }
+ul.frmb { padding-left: 0px; list-style-type: none; margin-left: 0px; }
+.frmb li { margin-bottom: 5px; padding: 5px; border: 1px solid #CCCCCC; background-color: #FFFFFF;}
+.frmb .legend { cursor: move; }
+.frmb .legend .toggle-form { float: right; }
+.frm-elements { padding: 5px 0; }
+.frm-elements label { width: 20%; float: left; margin-left: 5px; line-height: 24px; }
+.frm-elements .false-label { width: 20%; float: left; margin-left: 5px; line-height: 24px; }
+.frm-elements input[type=text] { float: left; width: 70%; }
+.frm-elements .fields { width: 70%; float: left; }
+.frm-elements .fields input[type=checkbox],
+.frm-elements .fields input[type=radio] { float: left; margin-right: 10px; }
+.frm-elements .false-label,
+.frm-elements .fields { margin-top: 10px }
+.frm-elements .fields div { clear: both; float: left; width: 99%; }
+.frm-elements .fields input[type=text] { width: 75%; }
+.frm-elements .fields label.auto { width: auto; margin: 0 0 5px 0; }
+.frm-elements .fields .remove { margin-left: 10px; line-height: 24px; }
+.frm-elements .fields .add-area { position: relative; left: -30px; line-height: 0; margin-top: -13px; }
+.frm-elements .fields .add-area .add { clear: both; }
+.frm-elements:after,
+.frm-fld:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.frm-elements,
+.frm-fld { display: inline-block }
+.frm-elements,
+.frm-fld { display: block }
+.del-button { float: right; margin-right: 10px; }
+/* html display helpers */
+textarea, .multi-row span { display: block; }
