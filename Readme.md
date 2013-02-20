@@ -1,4 +1,4 @@
-\jQuery.FormBuilder
+formbuilder
 ==================
 
 This project has many changes to it, but it is heavily based on the jquery.formbuilder project. (https://github.com/botskonet/jquery.formbuilder)
