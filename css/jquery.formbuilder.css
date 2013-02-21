@@ -1,11 +1,11 @@
 /* change this to use your own font icons for the control box */
 @font-face {
     font-family: 'formbuilder';
-    src:url('icons/formbuilder.eot');
-    src:url('icons/formbuilder.eot?#iefix') format('embedded-opentype'),
-        url('icons/formbuilder.woff') format('woff'),
-        url('icons/formbuilder.ttf') format('truetype'),
-        url('icons/formbuilder.svg#icomoon') format('svg');
+    src:url('../icons/formbuilder.eot');
+    src:url('../icons/formbuilder.eot?#iefix') format('embedded-opentype'),
+        url('../icons/formbuilder.woff') format('woff'),
+        url('../icons/formbuilder.ttf') format('truetype'),
+        url('../icons/formbuilder.svg#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
