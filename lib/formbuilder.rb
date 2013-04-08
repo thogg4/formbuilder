@@ -1,4 +1,4 @@
-class FormBuilder
+module Formbuilder
   class << self
     def generate_html(data)
       @html = ''

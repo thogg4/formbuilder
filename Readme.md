@@ -6,7 +6,7 @@ This project has many changes to it, but it is heavily based on the jquery.formb
 Changes:
 -------
 
-* There is no longer a checkbox group. Each checkbox element created is just one  checkbox.
+* There is no longer a checkbox group. Each checkbox element created is just one checkbox.
 * Rearranged defaults object:
 
 ```javascript
@@ -74,7 +74,6 @@ var defaults = {
 
 Usage
 -----
-
 ```
 $('any_element').formbuilder({options_to_override_defaults})
 ```

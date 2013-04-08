@@ -1,0 +1,55 @@
+/* change this to use your own font icons for the control box */
+@font-face {
+    font-family: 'formbuilder';
+    src:url(<%= asset_path('icons/formbuilder.eot') %>);
+    src:url(<%= asset_path('icons/formbuilder.eot?#iefix') %>) format('embedded-opentype'),
+        url(<%= asset_path('icons/formbuilder.woff') %>) format('woff'),
+        url(<%= asset_path('icons/formbuilder.ttf') %>) format('truetype'),
+        url(<%= asset_path('icons/formbuilder.svg#icomoon') %>) format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+[data-icon]:before {
+    font-family: 'formbuilder';
+    content: attr(data-icon);
+    speak: none;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+.frmb-controls { margin: 20px 0px; }
+.frmb-controls li { list-style-type: none; display: inline-block; margin: 0px 80px 0px 0px; padding: 10px 0px; cursor: pointer; text-align: center; }
+.frmb-controls li:last-child { margin: 0px; }
+.frmb-controls li div { margin-top: 5px; }
+.frmb-controls li span { font-size: 25px; }
+.frmb-controls label.controls-label { line-height: 30px; }
+ul.frmb { padding-left: 0px; list-style-type: none; margin-left: 0px; }
+.frmb li { margin-bottom: 5px; padding: 30px; border: 1px solid #CCCCCC; background-color: #FFFFFF;}
+.frmb .legend { cursor: move; }
+.frmb .legend .toggle-form { float: right; }
+.frm-elements { padding: 5px 0; }
+.frm-elements label { line-height: 20px; }
+.frm-elements .false-label { line-height: 24px; }
+.frm-elements input[type=text] { width: 70%; }
+.frm-elements .fields { width: 70%; }
+.frm-elements .fields input[type=checkbox],
+.frm-elements .fields input[type=radio] { margin-right: 10px; float: left; }
+.frm-elements .false-label,
+.frm-elements .fields { margin-top: 10px }
+.frm-elements .fields input[type=text] { width: 75%; }
+.frm-elements .fields .remove { margin-left: 10px; line-height: 15px; }
+.frm-elements .fields .add-area { line-height: 30px; }
+.frm-elements:after,
+.frm-fld:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.frm-elements,
+.frm-fld { display: inline-block }
+.frm-elements,
+.frm-fld { display: block }
+.frm-fld input.required,
+.frm-fld input.checked,
+.frm-fld input.multiple { float: left; margin-right: 10px; }
+.del-button { float: right; margin-right: 10px; }
+/* html display helpers */
+textarea, .multi-row span { display: block; }
