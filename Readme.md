@@ -80,3 +80,10 @@ $('any_element').formbuilder({options_to_override_defaults})
 
 I have also added a server side parser written in ruby to generate html from the json that is saved.
 
+Contributing
+------------
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
