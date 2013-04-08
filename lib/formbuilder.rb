@@ -74,5 +74,10 @@ module Formbuilder
       string.gsub(/\s+/, "_").downcase rescue nil
     end
   end
+
+  module Rails
+    class Engine < ::Rails::Engine
+    end
+  end
 end
 
