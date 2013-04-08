@@ -74,11 +74,25 @@ var defaults = {
 
 Usage
 -----
+This is now a gem. So:
+```
+gem install formbuilder || gem 'formbuilder' # in Gemfile
+```
+
+CSS
+```
+    *= require formbuilder
+```
+
+JS
+```
+//= require formbuilder
+```
+
 ```
 $('any_element').formbuilder({options_to_override_defaults})
 ```
-
-I have also added a server side parser written in ruby to generate html from the json that is saved.
+Use the `Formbuilder` class to render html from the json that the javascript generates.
 
 Contributing
 ------------
