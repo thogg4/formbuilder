@@ -383,6 +383,7 @@
           marginBottom: '0px'
         }, 'slow', function () {
           $(this).remove();
+          save();
         });
       }
       return false;
