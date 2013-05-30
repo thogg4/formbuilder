@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = ""
   spec.license       = "MIT"
 
-  spec.files = Dir["vendor/**/*.{scss,js,png}"] + Dir["lib/**/*"] + ["README.md", "LICENSE.txt"]
+  spec.files = Dir["vendor/**/*.{scss,js,png,svg,eot,ttf,woff}"] + Dir["lib/**/*"] + ["README.md", "LICENSE.txt"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
