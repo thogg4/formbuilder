@@ -14,48 +14,65 @@ var defaults = {
       // must have jquery ui included to make sortable.
       sortable: false,
       save: {
-        url: false,
+        input: false,
         complete_function: function(xhr, status) {},
-        data_type: 'json'
+        success_function: function(data, status) {},
       },
-      load_url: false,
+      load: {
+        input: false
+      },
       control_box_target: false,
+      save_button_target: false,
       save_button_classes: false,
+      classes_of_save_buttons: false, //override this with an array of classes of buttons you want to save the form
       serialize_prefix: 'frmb',
       types: {
         text: {
-          icon: false,
-          label: 'Text Field',
-          value: 'input_text'
+          icon: '&#xe005;',
+          title: 'Text Field',
+          label: '',
+          value: 'input_text',
+          placeholder: 'Enter your question or text here'
         },
         paragraph: {
-          icon: false,
-          label: 'Paragraph Field',
-          value: 'textarea'
+          icon: '&#xe001;',
+          title: 'Paragraph Field',
+          label: '',
+          value: 'textarea',
+          placeholder: 'Enter your question or text here'
         },
         checkbox: {
-          icon: false,
-          label: 'Checkbox',
-          value: 'checkbox'
+          icon: '&#xe006;',
+          title: 'Checkbox',
+          label: '',
+          value: 'checkbox',
+          placeholder: 'Enter your question or text here'
         },
         radio: {
-          icon: false,
-          label: 'Radio Group',
-          value: 'radio'
+          icon: '&#xe002;',
+          title: 'Radio Group',
+          label: '',
+          value: 'radio',
+          placeholder: 'Enter your question or text here',
+          option_placeholder: 'Option'
         },
         select: {
-          icon: false,
-          label: 'Select Box',
-          value: 'select'
+          icon: '&#xe003;',
+          title: 'Select Box',
+          label: '',
+          value: 'select',
+          placeholder: 'Enter your question or text here',
+          option_placeholder: 'Option'
         }
       },
       messages: {
+        controls_label: 'Add an item',
         save: "Save",
         add_new_field: "Add New Field...",
         title: "Title",
         label: "Label",
-        select_options: "Select Options",
-        add: "Add",
+        select_options: "Options",
+        add: "Add Option",
         remove_message: "Are you sure you want to remove this element?",
         remove: "Remove",
         selections_message: "Allow Multiple Selections",
